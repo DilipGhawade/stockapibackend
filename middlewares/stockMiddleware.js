@@ -1,6 +1,5 @@
 import { body, query, param } from "express-validator";
 import ApiError from "../utils/ApiError.js";
-import { CACHE_TTL } from "../constants/cache.js";
 
 export const validateSymbol = [
   param("symbol")
@@ -65,12 +64,17 @@ export const checkCache = async (req, res, next) => {
 };
 
 export const validateOutputSize = (req, res, next) => {
-  const { outputsize = 'compact' } = req.query;
-  
-  if (outputsize && !['compact', 'full'].includes(outputsize.toLowerCase())) {
-    return next(new ApiError(400, 'Invalid output size. Must be either "compact" or "full"'));
+  const { outputsize = "compact" } = req.query;
+
+  if (outputsize && !["compact", "full"].includes(outputsize.toLowerCase())) {
+    return next(
+      new ApiError(
+        400,
+        'Invalid output size. Must be either "compact" or "full"'
+      )
+    );
   }
-  
+
   // Convert to lowercase for consistency
   req.query.outputsize = outputsize.toLowerCase();
   next();

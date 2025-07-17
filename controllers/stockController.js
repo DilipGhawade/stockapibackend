@@ -1,12 +1,21 @@
-import AlphaVantageService from "../services/AlphaVantageService.js";
+import { 
+  getDailyData as getAlphaVantageDailyData,
+  getIntradayData as getAlphaVantageIntradayData,
+  getHistoricalData as getAlphaVantageHistoricalData
+} from "../services/AlphaVantageService.js";
 import ApiError from "../utils/ApiError.js";
 import StockData from "../models/StockDataModel.js";
 import DailyStockData from "../models/DailyStockDataModel.js";
 import logger from "../config/logger.js";
 
-const alphaVantageService = new AlphaVantageService(
-  process.env.ALPHA_VANTAGE_API_KEY
-);
+function getAlphaVantageApiKey() {
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  if (!apiKey) {
+    logger.error('ALPHA_VANTAGE_API_KEY is not configured in environment variables');
+    throw new Error('Alpha Vantage API key is not configured. Please set the ALPHA_VANTAGE_API_KEY environment variable.');
+  }
+  return apiKey;
+}
 
 export const getDailyData = async (req, res, next) => {
   try {
@@ -15,7 +24,7 @@ export const getDailyData = async (req, res, next) => {
 
     logger.info(`Fetching daily data for ${symbol}`);
     
-    const data = await alphaVantageService.getDailyData(symbol, outputsize);
+    const data = await getAlphaVantageDailyData(getAlphaVantageApiKey(), symbol, outputsize);
     
     // Save to MongoDB using the new DailyStockData model
     if (data && data.timeSeries) {
@@ -46,7 +55,7 @@ export const getIntradayData = async (req, res, next) => {
 
     logger.info(`Fetching real-time data for ${symbol} with interval ${interval}`);
     
-    const data = await alphaVantageService.getIntradayData(symbol, interval);
+    const data = await getAlphaVantageIntradayData(getAlphaVantageApiKey(), symbol, interval);
     
     // Save to MongoDB
     if (data && data.metaData) {
@@ -101,7 +110,8 @@ export const getHistoricalData = async (req, res, next) => {
 
     logger.info(`Fetching historical data for ${symbol} from ${start_date} to ${end_date}`);
     
-    const data = await alphaVantageService.getHistoricalData(
+    const data = await getAlphaVantageHistoricalData(
+      getAlphaVantageApiKey(),
       symbol, 
       start_date, 
       end_date, 

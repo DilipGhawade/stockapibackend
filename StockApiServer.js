@@ -1,20 +1,48 @@
-import express from 'express';
-import cors from 'cors';
+// Load environment variables before anything else
 import dotenv from 'dotenv';
-import morgan from 'morgan';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import connectDB from './config/db.js';
-import logger from './config/logger.js';
-import stockRoutes from './routes/stockRoutes.js';
-import ApiError from './utils/ApiError.js';
+import { dirname, resolve } from 'path';
 
 // ES modules fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from .env file
+const envPath = resolve(__dirname, '.env');
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+  process.exit(1);
+}
+
+// Now import other dependencies
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import connectDB from './config/db.js';
+import logger from './config/logger.js';
+import stockRoutes from './routes/stockRoutes.js';
+import ApiError from './utils/ApiError.js';
+
+// Debug: Log the current working directory and environment variables
+console.log('Current working directory:', process.cwd());
+console.log('Environment file loaded from:', envPath);
+console.log('Environment variables:', {
+  NODE_ENV: process.env.NODE_ENV,
+  ALPHA_VANTAGE_API_KEY: process.env.ALPHA_VANTAGE_API_KEY ? '*** (exists)' : 'NOT FOUND',
+  MONGODB_URI: process.env.MONGODB_URI ? '*** (exists)' : 'NOT FOUND'
+});
+
+// Validate required environment variables
+const requiredEnvVars = ['ALPHA_VANTAGE_API_KEY'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  const errorMessage = `Missing required environment variables: ${missingVars.join(', ')}`;
+  console.error(errorMessage);
+  process.exit(1);
+}
 
 class StockApiServer {
   constructor() {
