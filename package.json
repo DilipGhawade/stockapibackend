@@ -1,0 +1,37 @@
+{
+  "name": "stockapibackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "StockApiServer.js",
+  "type": "module",
+  "scripts": {
+    "start": "node StockApiServer.js",
+    "dev": "NODE_ENV=development nodemon StockApiServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DilipGhawade/stockapibackend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DilipGhawade/stockapibackend/issues"
+  },
+  "homepage": "https://github.com/DilipGhawade/stockapibackend#readme",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "mongoose": "^8.16.3",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.10",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  }
+}
